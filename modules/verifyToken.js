@@ -1,5 +1,4 @@
 const axios = require('axios');
-// var Base64 = require('js-base64').Base64;
 
 
 var verifyToken = function(token){
@@ -18,11 +17,6 @@ var verifyToken = function(token){
 
     axios.get(linkToSearch,axiosConfig)
     .then(posts => {
-      // var payLoadUrl = token.split('.')[1];
-      // var payLoadBase64 = payLoadUrl.replace('-', '+').replace('_', '/');
-      // var payLoad = JSON.parse(Base64.decode(payLoadBase64));
-      // console.log(payLoad);
-      // console.log(posts.data);
       resolve(posts.data)
     })
     .catch(err =>{

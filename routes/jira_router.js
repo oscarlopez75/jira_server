@@ -6,9 +6,6 @@ const findIssues = require('../modules/find_issues');
 const processRecords = require('../modules/process_records');
 const verifyToken = require('../modules/verifyToken');
 
-// var jwt = require('jsonwebtoken');
-
-
 
 var router = express.Router();
 

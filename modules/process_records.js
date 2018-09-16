@@ -15,8 +15,9 @@ function processReport(data){
       // console.log(filterNumber + " " + filterName);
       await requestJira.getJiraResults(filterNumber, filterName)
         .then(result => {
-        // console.log(filterName + " " + filterLink + " has " + result.amount);
+        // console.log(result);
         let reportIssue = {filterName: filterName, filterLink: filterLink, filterAmount: result.amount, filterHours: filterHours, filterNumber: filterNumber};
+        // console.log(reportIssue);
         report.push(reportIssue);
         })
         .catch(err => {

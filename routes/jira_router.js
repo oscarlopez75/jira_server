@@ -4,7 +4,7 @@ const readFilters = require('../modules/readFilters');
 const requestJira = require('../modules/requestJira');
 const findIssues = require('../modules/find_issues');
 const processRecords = require('../modules/process_records');
-const checkToken = require('../modules/auth');
+const verifyToken = require('../modules/verifyToken');
 
 // var jwt = require('jsonwebtoken');
 
@@ -41,7 +41,7 @@ router.post('/getTotal', (req, res) => {
       })
       .catch((err) => {
         // console.log(err);
-        res.status(400).send(err);
+        res.status(400).json(err);
       })
 });
 
@@ -50,16 +50,22 @@ router.post('/getTotalAsia', (req, res) => {
   filterName = req.body.filtername;
   token = req.body.token;
 
-  checkToken.checkToken(token)
+  verifyToken.verifyToken(token)
     .then(decoded => {
-      requestJira.getJiraResults(filterNumber, filterName)
-        .then((result) => {
-          res.status(200).json(result);
-        })
-        .catch((err) => {
-          // console.log(err);
-          res.status(400).send(err);
-        })
+      let access = ['admin'];
+      if(access.includes(decoded.message.body.role)){
+        requestJira.getJiraResults(filterNumber, filterName)
+          .then((result) => {
+            res.status(200).json(result);
+          })
+          .catch((err) => {
+            // console.log(err);
+            res.status(400).send(err);
+          })
+      }else{
+        res.status(403).json({message: 'User has no access'});
+      }
+
     })
     .catch((err) => {
       res.status(401).json({message: err});
@@ -89,8 +95,7 @@ router.post('/getIssues', function(req, res){
 
 router.get('/getReport', function(req, res){
   if( req.hasOwnProperty('headers') && req.headers.hasOwnProperty('authorization')){
-    var decoded = {};
-    decoded = checkToken.checkToken(req.headers['authorization'])
+    verifyToken.verifyToken(req.headers['authorization'])
       .then(function(decoded){
         readFilters.getFilters('../files/priority.txt')
           .then(data => {
@@ -120,8 +125,7 @@ router.get('/getReport', function(req, res){
 
 router.get('/getResolved', function(req, res){
   if( req.hasOwnProperty('headers') && req.headers.hasOwnProperty('authorization')){
-    var decoded = {};
-    decoded = checkToken.checkToken(req.headers['authorization'])
+    verifyToken.verifyToken(req.headers['authorization'])
       .then(function(decoded){
         readFilters.getFilters('../files/resolved.txt')
           .then(data => {
@@ -150,23 +154,28 @@ router.get('/getResolved', function(req, res){
 
 router.get('/getAsian', function(req, res){
   if( req.hasOwnProperty('headers') && req.headers.hasOwnProperty('authorization')){
-    var decoded = {};
-    decoded = checkToken.checkToken(req.headers['authorization'])
+    verifyToken.verifyToken(req.headers['authorization'])
       .then(function(decoded){
-        readFilters.getFilters('../files/asians.txt')
-          .then(data => {
-            processRecords.processReport(data)
-              .then(result => {
-                res.status(200).json(result);
-              })
-              .catch(err =>{
-                res.status(400).send(err);
-              })
-          })
-          .catch(err => {
-            console.log(err);
-            res.status(400).send(err);
-          })
+        let access = ['admin'];
+        if(access.includes(decoded.message.body.role)){
+          readFilters.getFilters('../files/asians.txt')
+            .then(data => {
+              processRecords.processReport(data)
+                .then(result => {
+                  res.status(200).json(result);
+                })
+                .catch(err =>{
+                  res.status(400).send(err);
+                })
+            })
+            .catch(err => {
+              console.log(err);
+              res.status(400).send(err);
+            })
+        }else{
+          res.status(403).json({message: 'User has no access'});
+        }
+
       })
       .catch((err) => {
         res.status(401).json({message: err});
@@ -179,8 +188,7 @@ router.get('/getAsian', function(req, res){
 
 router.get('/getAsianIssues', function(req, res){
   if( req.hasOwnProperty('headers') && req.headers.hasOwnProperty('authorization')){
-    var decoded = {};
-    decoded = checkToken.checkToken(req.headers['authorization'])
+    verifyToken.verifyToken(req.headers['authorization'])
       .then(function(decoded){
         readFilters.getFilters('../files/asians.txt')
           .then(data => {

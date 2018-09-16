@@ -4,7 +4,7 @@ var results = {};
 var counter = 0;
 
 
-var getIssues = function(data){  
+var getIssues = function(data){
   let filters = Object.keys(data);
   let i = 0;
   counter = 0;
@@ -20,6 +20,7 @@ var getIssues = function(data){
       getByFilter(filterNumber,filterName, filterHours, filters.length)
         .then(() => {
           // console.log('Done finding issues');
+          // console.log(results);
           resolve(results);
         })
         .catch(err => {
@@ -89,7 +90,12 @@ function processRec(result, filterNumber, filterName, filterHours){
       assignee: assignee,
       assigneeEmail: assigneeEmail,
       reporter: result.issues[i].fields.reporter.name,
-      reporterEmail: result.issues[i].fields.reporter.emailAddress
+      reporterEmail: result.issues[i].fields.reporter.emailAddress,
+      priority: result.issues[i].fields.priority.name,
+      status: result.issues[i].fields.status.name,
+      created: result.issues[i].fields.created,
+      updated: result.issues[i].fields.updated,
+      link: "https://jira.realtimegaming.com/browse/" + result.issues[i].key
     });
 
   }

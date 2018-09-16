@@ -31,7 +31,9 @@ var getJiraResults = function(filterNumber, filterName){
       // console.log(posts.data);
       //*************************************************************************************************
       //if you need the reporter and assignee from issues array fields.assignee.name or fields.reporter.name
+      // console.log(posts.data.issues);
       var objectJson = {'number': filterNumber, 'name': filterName, 'amount': posts.data.total, 'issues': posts.data.issues};
+      // console.log(objectJson.labels);
       resolve(objectJson);
     })
     .catch((err) => {
